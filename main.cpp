@@ -109,6 +109,10 @@ int main(int argc, char *argv[])
                 int samples_per_frame = NSAMPLES;
                 int bits_per_sample = NBITS;
 
+/** view this!!! **/
+//http://comments.gmane.org/gmane.comp.voip.pjsip/17779
+//http://comments.gmane.org/gmane.comp.voip.pjsip/12084
+//http://pjsip.pjsip.narkive.com/1Zrk8xTa/pjmedia-splitcomb-how-add-channels-to-bridge
 
                 pj_caching_pool cp;
 
@@ -129,25 +133,55 @@ int main(int argc, char *argv[])
                                       4000,
                                       NULL);
 
-                players_pool = pj_pool_create(&cp.factory,
-                                              "players_pool",
-                                              8000,
-                                              8000,
-                                              NULL);
 
-                recorders_pool = pj_pool_create(&cp.factory,
-                                                "recorders_pool",
-                                                8000,
-                                                8000,
-                                                NULL);
+                pjsua_set_no_snd_dev();
+
+
+                pjmedia_snd_port *sound_ports[PJSUA_MAX_PLAYERS + PJSUA_MAX_RECORDERS ] = { 0 };
+
+
+                int devs = 0;
 
 
 
-                pjmedia_snd_port *players[PJSUA_MAX_PLAYERS]        = { 0 } ;
-                pjmedia_snd_port *recorders[PJSUA_MAX_RECORDERS]    = { 0 } ;
 
-                int devs = 0, i = 0;
+                unsigned int id1, id2;
 
+                for(id1 = 0; id1 < PJSUA_MAX_PLAYERS; ++id1 )
+                {
+                    //master port info
+                    pjmedia_snd_port *snd = NULL;
+                    pjsua_conf_port_info masterPortInfo;
+
+                    status = pjsua_conf_get_port_info(id1, &masterPortInfo);
+                    if ( status == PJ_SUCCESS )
+                    {
+                        printf("Master port is OK... \n");
+                        for (id2 = 0; id2 < PJSUA_MAX_RECORDERS; ++id2 )
+                        {
+                            status = pjmedia_snd_port_create(pool, id1, id2,
+                                                            masterPortInfo.clock_rate,
+                                                             1,
+                                                             1 * masterPortInfo.samples_per_frame,
+                                                             masterPortInfo.bits_per_sample, 0,
+                                                             &snd);
+
+                            if ( status == PJ_SUCCESS )
+                            {
+                                sound_ports[devs] = snd;
+                                devs++;
+                            }
+
+                        }//!for
+                    }
+                }//!for
+
+
+
+
+
+
+#if 0
                 for(i=0; i < PJSUA_MAX_PLAYERS; i++)
                 {
                     pjmedia_snd_port* tmp = NULL;
@@ -180,6 +214,7 @@ int main(int argc, char *argv[])
                         recorders[devs++] = tmp;
                     }
                 }
+#endif
 
                 MY_PJ_TEST( status == PJ_SUCCESS );
 
@@ -201,7 +236,7 @@ int main(int argc, char *argv[])
 
 
                 pjmedia_port *newPort = pjmedia_conf_get_master_port(conf_bridges[0]);
-                status = pjmedia_snd_port_connect(players[0], newPort);
+                //status = pjmedia_snd_port_connect(players[0], newPort);
                 MY_PJ_TEST( status == PJ_SUCCESS );
 
 
