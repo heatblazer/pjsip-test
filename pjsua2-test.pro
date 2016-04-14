@@ -53,3 +53,9 @@ unix:{
 }
 else:{ message("Not Unix") }
 
+HEADERS += \
+    auddevmanagerex.h
+
+SOURCES += \
+    auddevmanagerex.cpp
+

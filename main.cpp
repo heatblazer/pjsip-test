@@ -4,6 +4,22 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define CLOCK_RATE  16000
+#define NCHANNELS   2
+#define NSAMPLES    (CLOCK_RATE * 20 / 1000)
+#define NBITS       16
+
+
+
+#define MY_PJ_TEST(EXPR) do {   \
+        if ( EXPR ) {           \
+                res = 1;        \
+            } else {            \
+                res = -1;       \
+            }                   \
+     } while ( 0 );             \
+
+
 typedef struct {
     std::string driver;
     std::string name;
@@ -78,6 +94,11 @@ int main(int argc, char *argv[])
 
 
 
+
+
+}
+#if 0
+
     //now lookup to retrieve the id
         try {
 
@@ -89,18 +110,7 @@ int main(int argc, char *argv[])
 
 
             {
-#define MY_PJ_TEST(EXPR) do {   \
-        if ( EXPR ) {           \
-                res = 1;        \
-            } else {            \
-                res = -1;       \
-            }                   \
-     } while ( 0 );             \
 
-#define CLOCK_RATE  16000
-#define NCHANNELS   2
-#define NSAMPLES    (CLOCK_RATE * 20 / 1000)
-#define NBITS       16
 
 
 
@@ -181,7 +191,7 @@ int main(int argc, char *argv[])
 
 
 
-#if 0
+
                 for(i=0; i < PJSUA_MAX_PLAYERS; i++)
                 {
                     pjmedia_snd_port* tmp = NULL;
@@ -214,7 +224,7 @@ int main(int argc, char *argv[])
                         recorders[devs++] = tmp;
                     }
                 }
-#endif
+
 
                 MY_PJ_TEST( status == PJ_SUCCESS );
 
@@ -251,3 +261,4 @@ int main(int argc, char *argv[])
         }
 
 }
+#endif
