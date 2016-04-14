@@ -26,6 +26,7 @@ typedef struct {
     std::string name;
 } DriverAndName;
 
+
 int main(int argc, char *argv[])
 {
 
@@ -34,20 +35,10 @@ int main(int argc, char *argv[])
 
     try {
         ep.libCreate();
-
         pj::AudDevManager& pMngr = ep.audDevManager();
+        AudDevManagerEx exManager ( &pMngr );
 
-
-        const pj::AudioDevInfoVector& audioDevs = pMngr.enumDev();
-        for (unsigned int i = 0U; i < audioDevs.size(); ++i) {
-            std::cout          << "AudioDev " << i
-                               << " name:" << audioDevs.at(i)->name
-                               << " drv:" << audioDevs.at(i)->driver
-                               << " ins:" << audioDevs.at(i)->inputCount
-                               << " outs: " << audioDevs.at(i)->outputCount
-                               << " sampl: " << audioDevs.at(i)->defaultSamplesPerSec
-                               << " caps:"  << audioDevs.at(i)->caps;
-        }
+        std::cout << "Devices: " << pjmedia_aud_dev_count() << std::endl;
 
         ret = PJ_SUCCESS;
     } catch (pj::Error & err) {
@@ -55,7 +46,18 @@ int main(int argc, char *argv[])
         ret = 1;
     }
 
+    try {
+        ep.libDestroy();
+    } catch(pj::Error &err) {
+        std::cout << "Exception: " << err.info() << std::endl;
+        ret = 1;
+    }
 
+    if (ret == PJ_SUCCESS) {
+        std::cout << "Success" << std::endl;
+    } else {
+        std::cout << "Error Found" << std::endl;
+    }
     return 0;
 
 }

@@ -7,15 +7,14 @@ using namespace pj;
 
 
 AudDevManagerEx::AudDevManagerEx(const AudDevManager *parent)
+    :m_dev1(NULL), m_defaultManager(parent)
 {
-    m_defaultManager = parent;
+
 }
 
 AudDevManagerEx::~AudDevManagerEx()
 {
-
-    std::cout << "****************** ~AudDevManagerEx()!!!!" << std::endl;
-
+//breakpoint
 }
 
 //искаме нова ексклузивна медия, която отнове е сингълтон
@@ -78,6 +77,23 @@ throw (pj::Error)
     }
 }
 
+void
+AudDevManagerEx::setNullDevEx(void)
+throw (pj::Error)
+{
+    PJSUA2_CHECK_EXPR( pjsua_set_null_snd_dev() );
+}
+
+
+pj::MediaPort*
+AudDevManagerEx::setNoDevEx(void)
+{
+    pj::MediaPort* pPort = (pj::MediaPort*) pjsua_set_no_snd_dev();
+    return pPort;
+}
+
+
+
 
 //private
 int
@@ -95,7 +111,7 @@ throw (pj::Error)
 }
 
 
-const pj::AudDevManager* AudDevManagerEx::getDefaultManager()
+const pj::AudDevManager* AudDevManagerEx::getDefaultAudioManager()
 {
     return m_defaultManager;
 }
@@ -114,11 +130,6 @@ AudDevManagerEx::
 DevAudioMediaEx::~DevAudioMediaEx()
 {
     this->id = PJSUA_INVALID_ID;
-
 }
 /***********************************************************************/
-
-
-
-
 

@@ -1,19 +1,38 @@
+#pragma once
+
 #ifndef AUDDEVMANAGEREX_H
 #define AUDDEVMANAGEREX_H
-
 #include <pjsua2/media.hpp>
-
 
 //този клас ще разшири функционалността на AudDevManager
 //като добави допълнителен хардверен дивайс, освен
 //текущата кепчър/рекординг медиа
+//suffix "Ex" за конвенция ( Extra функционалност  )
 
 
+//предекларации ако има нужда от помощни класове
 class AudDevManagerEx;
+class AudioMediaEx;
+
+///I can use the defauilt AudioMedia class
+
+class AudioMediaEx : public pj::AudioMedia
+{
+public:
+    virtual ~AudioMediaEx();
+protected:
+    explicit AudioMediaEx();
+protected:
+    int                 m_id;
+private:
+    pj_caching_pool     m_cachePool;
+    pj_pool_t*          m_pool;
+};
+
 
 class AudDevManagerEx
 {
-//моля ако се добавят нови методи статиците да са най-отгоре
+///ако се добавят нови методи статиците да са най-отгоре
 ///static:
 public:
 ///!end statics
@@ -22,6 +41,11 @@ public:
 ///ctors and dtors
 public:
 
+    //ще композираме клас, който има AudDevManager като дефолт и можем да го достъпваме
+    //с гетер метод, нашия клас ще има малка и сбита функционалност за регистрацията на
+    // <Line2> ексклузивно
+    //Инстанции от нашия клас могат да регистрират нови Capture и Playback медии
+    //добре е да слагаме инстанциите на медиите в листа на
     AudDevManagerEx(const pj::AudDevManager* parent);
     virtual ~AudDevManagerEx() ; //ще ни трябва ли дете от от този клас?
 
@@ -45,6 +69,9 @@ public:
     virtual void    setPlaybackDevEx(const int playback_dev) const throw (pj::Error);
 
 
+///
+    virtual void setNullDevEx(void) throw (pj::Error);
+    virtual pj::MediaPort* setNoDevEx(void);
 
 
 private:
@@ -55,27 +82,25 @@ private:
     class DevAudioMediaEx : public pj::AudioMedia
     {
     public:
-        DevAudioMediaEx();
+        explicit DevAudioMediaEx();
         ~DevAudioMediaEx();
     };
 
 
 public:
+///ако искам да достъпя дефолтния манагер това е функцията, или стандартния достъп
+///през Ендпоинт-а
 
-    const pj::AudDevManager* getDefaultManager(void);
+    const pj::AudDevManager* getDefaultAudioManager(void);
 private:
     int getActiveDevEx(bool is_capture) const throw (pj::Error);
 
     //оригинало има медиа лист от обекти,
-    //които мога да достъвам от парент класа
+    //които мога да достъвам от парент класа, но на мен ми трябва само едно устройство
+    //за <Line2>  m_dev1
 
     //засега ще регистриам само 1 екстра дивайс за <Line2>
     pj::AudioMedia* m_dev1;
-
-    //това е помощен указател към Endpoint мениджъра който е
-    //дефолтен.
-    //засега не го ползвам но може и да ми потрябва в бъдеще
-
     const pj::AudDevManager*      m_defaultManager;
 
 };
