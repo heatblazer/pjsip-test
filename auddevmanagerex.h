@@ -1,5 +1,4 @@
 #pragma once
-
 #ifndef AUDDEVMANAGEREX_H
 #define AUDDEVMANAGEREX_H
 #include <pjsua2/media.hpp>
@@ -9,6 +8,8 @@
 //текущата кепчър/рекординг медиа
 //suffix "Ex" за конвенция ( Extra функционалност  )
 
+//ако пачваме оригиналния lib то тогава ще добавим тази функционалност
+//в дефолтния ауддевманагер
 
 //предекларации ако има нужда от помощни класове
 class AudDevManagerEx;
@@ -46,7 +47,7 @@ public:
     // <Line2> ексклузивно
     //Инстанции от нашия клас могат да регистрират нови Capture и Playback медии
     //добре е да слагаме инстанциите на медиите в листа на
-    AudDevManagerEx(const pj::AudDevManager* parent);
+    AudDevManagerEx(pj::AudDevManager& parent);
     virtual ~AudDevManagerEx() ; //ще ни трябва ли дете от от този клас?
 
 
@@ -69,10 +70,22 @@ public:
     virtual void    setPlaybackDevEx(const int playback_dev) const throw (pj::Error);
 
 
-///
-    virtual void setNullDevEx(void) throw (pj::Error);
-    virtual pj::MediaPort* setNoDevEx(void);
 
+    /**
+        Disconnect the main conference bridge from any sound devices,
+        and let application connect the bridge to it's own sound device/master port.
+        Returns:
+            The port interface of the conference bridge, so that application can connect
+        this to it's own sound device or master port.
+    **/
+    virtual void connectToDevice1(void);
+    virtual void connectToDevice2(void);
+
+
+
+    //помошна функция да видим всички портове, може да не ни е нужна
+    //ако PJUSA2 има вече такава
+    virtual void listAllPorts(void);
 
 private:
     //помощен клас за създаване на нова медиа
@@ -86,22 +99,27 @@ private:
         ~DevAudioMediaEx();
     };
 
-
 public:
 ///ако искам да достъпя дефолтния манагер това е функцията, или стандартния достъп
 ///през Ендпоинт-а
 
-    const pj::AudDevManager* getDefaultAudioManager(void);
+     pj::AudDevManager& getDefaultAudioManager(void);
 private:
     int getActiveDevEx(bool is_capture) const throw (pj::Error);
 
     //оригинало има медиа лист от обекти,
     //които мога да достъвам от парент класа, но на мен ми трябва само едно устройство
-    //за <Line2>  m_dev1
+    //за <Line2>
 
-    //засега ще регистриам само 1 екстра дивайс за <Line2>
-    pj::AudioMedia* m_dev1;
-    const pj::AudDevManager*      m_defaultManager;
+    //регистрирам две медиа устройства
+    pj::AudioMedia*         m_dev1;
+    pj::AudioMedia*         m_dev2;
+
+    //медиини портове:
+    pjmedia_port*       m_port1;
+    pjmedia_port*       m_port2;
+
+    pj::AudDevManager&      m_defaultManager;
 
 };
 

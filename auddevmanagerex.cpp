@@ -1,20 +1,24 @@
 #include "auddevmanagerex.h"
-#include <iostream>
+#include <iostream> //да се премахне по-късно
+
 
 using namespace pj;
 #define THIS_FILE "auddevmanagerex.cpp"
 
 
 
-AudDevManagerEx::AudDevManagerEx(const AudDevManager *parent)
-    :m_dev1(NULL), m_defaultManager(parent)
+AudDevManagerEx::AudDevManagerEx(AudDevManager& parent)
+    :m_defaultManager(parent),
+     m_dev1(NULL),
+     m_port1(NULL),
+     m_port2(NULL)
 {
 
 }
 
 AudDevManagerEx::~AudDevManagerEx()
 {
-//breakpoint
+    //breakpoint
 }
 
 //искаме нова ексклузивна медия, която отнове е сингълтон
@@ -77,22 +81,31 @@ throw (pj::Error)
     }
 }
 
+
+
 void
-AudDevManagerEx::setNullDevEx(void)
-throw (pj::Error)
+AudDevManagerEx::connectToDevice1(void)
 {
-    PJSUA2_CHECK_EXPR( pjsua_set_null_snd_dev() );
+    m_port1 = (pjmedia_port*) m_defaultManager.setNoDev();
+}
+
+void
+AudDevManagerEx::connectToDevice2(void)
+{
+    m_port2  = (pjmedia_port*) m_defaultManager.setNoDev();
+
 }
 
 
-pj::MediaPort*
-AudDevManagerEx::setNoDevEx(void)
+void
+AudDevManagerEx::listAllPorts(void)
 {
-    pj::MediaPort* pPort = (pj::MediaPort*) pjsua_set_no_snd_dev();
-    return pPort;
+    unsigned int ports = 2;
+    pjsua_conf_port_id ids[PJSUA_MAX_CONF_PORTS]={0};
+
+    pj_status_t status = pjsua_enum_conf_ports(ids, &ports);
+    std::cout << "Port counts: " << ports << std::endl;
 }
-
-
 
 
 //private
@@ -111,7 +124,7 @@ throw (pj::Error)
 }
 
 
-const pj::AudDevManager* AudDevManagerEx::getDefaultAudioManager()
+pj::AudDevManager& AudDevManagerEx::getDefaultAudioManager()
 {
     return m_defaultManager;
 }

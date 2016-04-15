@@ -11,16 +11,6 @@
 #define NBITS       16
 
 
-
-#define MY_PJ_TEST(EXPR) do {   \
-        if ( EXPR ) {           \
-                res = 1;        \
-            } else {            \
-                res = -1;       \
-            }                   \
-     } while ( 0 );             \
-
-
 typedef struct {
     std::string driver;
     std::string name;
@@ -30,13 +20,32 @@ typedef struct {
 int main(int argc, char *argv[])
 {
 
+    PJ_UNUSED_ARG(argc);
+    PJ_UNUSED_ARG(argv);
+
     int ret = 0;
     pj::Endpoint ep;
+    pj::EpConfig cfg;
+
 
     try {
         ep.libCreate();
-        pj::AudDevManager& pMngr = ep.audDevManager();
-        AudDevManagerEx exManager ( &pMngr );
+        ep.libInit(cfg);
+
+
+      //  pjsua_media_config cfg;
+      //  pjsua_media_config_default(&cfg);
+
+        pj::AudDevManager& defMngr = ep.audDevManager();
+        AudDevManagerEx exManager (defMngr);
+
+        const pj::AudioDevInfoVector devlist = exManager.getDefaultAudioManager().enumDev();
+
+        pj::AudioMedia& am1 = exManager.getCaptureDevMediaEx();
+        pj::AudioMedia& am2 = exManager.getDefaultAudioManager().getCaptureDevMedia();
+       // exManager.listAllPorts();
+       // exManager.connectToDevice1();
+       // exManager.connectToDevice2();
 
         std::cout << "Devices: " << pjmedia_aud_dev_count() << std::endl;
 
@@ -59,5 +68,5 @@ int main(int argc, char *argv[])
         std::cout << "Error Found" << std::endl;
     }
     return 0;
-
 }
+
