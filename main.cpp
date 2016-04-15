@@ -41,14 +41,42 @@ int main(int argc, char *argv[])
 
         const pj::AudioDevInfoVector devlist = exManager.getDefaultAudioManager().enumDev();
 
-        pj::AudioMedia& am1 = exManager.getCaptureDevMediaEx();
-        pj::AudioMedia& am2 = exManager.getDefaultAudioManager().getCaptureDevMedia();
-       // exManager.listAllPorts();
-       // exManager.connectToDevice1();
-       // exManager.connectToDevice2();
 
-        std::cout << "Devices: " << pjmedia_aud_dev_count() << std::endl;
+        pj::AudioMediaPlayer* player1 = new pj::AudioMediaPlayer();
+        pj::AudioMediaPlayer* player2 = new pj::AudioMediaPlayer();
 
+        try {
+            player1->createPlayer("player1.wav", 0);
+
+        } catch ( pj::Error ex )
+        {
+            std::cout << "Failed creting plyaers" << std::endl;
+        }
+
+
+        try {
+            player2->createPlayer("player2.wav", 0);
+        } catch ( pj::Error ex )
+        {
+            std::cout << "Failed creting plyaers" << std::endl;
+        }
+
+
+        try {
+
+            exManager.getDefaultAudioManager().setPlaybackDev(0);
+        } catch ( pj::Error err ) { }
+
+        try {
+
+            exManager.setPlaybackDevEx(1);
+        } catch ( pj::Error err ){ }
+
+        pj::AudioMedia& media1 = exManager.getDefaultAudioManager().getPlaybackDevMedia();
+        pj::AudioMedia& media2 = exManager.getPlaybackDevMediaEx();
+
+        //player1->startTransmit(exManager.getDefaultAudioManager().getPlaybackDevMedia());
+       // player2->startTransmit(exManager.getPlaybackDevMediaEx());
         ret = PJ_SUCCESS;
     } catch (pj::Error & err) {
         std::cout << "Exception: " << err.info() << std::endl;

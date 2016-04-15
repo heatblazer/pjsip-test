@@ -87,6 +87,12 @@ void
 AudDevManagerEx::connectToDevice1(void)
 {
     m_port1 = (pjmedia_port*) m_defaultManager.setNoDev();
+
+    if ( m_port1 ){
+        std::cout << "OK" << std::endl;
+    } else {
+
+    }
 }
 
 void
@@ -94,17 +100,12 @@ AudDevManagerEx::connectToDevice2(void)
 {
     m_port2  = (pjmedia_port*) m_defaultManager.setNoDev();
 
-}
+    if ( m_port2 ){
+        std::cout << "OK" << std::endl;
+    } else {
 
+    }
 
-void
-AudDevManagerEx::listAllPorts(void)
-{
-    unsigned int ports = 2;
-    pjsua_conf_port_id ids[PJSUA_MAX_CONF_PORTS]={0};
-
-    pj_status_t status = pjsua_enum_conf_ports(ids, &ports);
-    std::cout << "Port counts: " << ports << std::endl;
 }
 
 
