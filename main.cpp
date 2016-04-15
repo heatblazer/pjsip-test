@@ -31,57 +31,55 @@ int main(int argc, char *argv[])
     try {
         ep.libCreate();
         ep.libInit(cfg);
+        ep.libStart();
+     } catch ( pj::Error err ) { }
 
 
-      //  pjsua_media_config cfg;
-      //  pjsua_media_config_default(&cfg);
+    pj::AudDevManager& defMngr = ep.audDevManager();
+    AudDevManagerEx exManager (defMngr);
 
-        pj::AudDevManager& defMngr = ep.audDevManager();
-        AudDevManagerEx exManager (defMngr);
-
-        const pj::AudioDevInfoVector devlist = exManager.getDefaultAudioManager().enumDev();
+    const pj::AudioDevInfoVector devlist = exManager.getDefaultAudioManager().enumDev();
 
 
-        pj::AudioMediaPlayer* player1 = new pj::AudioMediaPlayer();
-        pj::AudioMediaPlayer* player2 = new pj::AudioMediaPlayer();
+    pj::AudioMediaPlayer* player1 = new pj::AudioMediaPlayer();
+    pj::AudioMediaPlayer* player2 = new pj::AudioMediaPlayer();
 
-        try {
-            player1->createPlayer("player1.wav", 0);
+    pj::AudioMediaRecorder* rec1 = new pj::AudioMediaRecorder();
+    pj::AudioMediaRecorder* rec2 = new pj::AudioMediaRecorder();
 
-        } catch ( pj::Error ex )
-        {
-            std::cout << "Failed creting plyaers" << std::endl;
-        }
+    try {
+        player1->createPlayer("player1.wav");
+        rec1->createRecorder("recorder1.wav");
 
-
-        try {
-            player2->createPlayer("player2.wav", 0);
-        } catch ( pj::Error ex )
-        {
-            std::cout << "Failed creting plyaers" << std::endl;
-        }
-
-
-        try {
-
-            exManager.getDefaultAudioManager().setPlaybackDev(0);
-        } catch ( pj::Error err ) { }
-
-        try {
-
-            exManager.setPlaybackDevEx(1);
-        } catch ( pj::Error err ){ }
-
-        pj::AudioMedia& media1 = exManager.getDefaultAudioManager().getPlaybackDevMedia();
-        pj::AudioMedia& media2 = exManager.getPlaybackDevMediaEx();
-
-        //player1->startTransmit(exManager.getDefaultAudioManager().getPlaybackDevMedia());
-       // player2->startTransmit(exManager.getPlaybackDevMediaEx());
-        ret = PJ_SUCCESS;
-    } catch (pj::Error & err) {
-        std::cout << "Exception: " << err.info() << std::endl;
-        ret = 1;
+    } catch ( pj::Error ex )
+    {
+        std::cout << "Failed creting plyaers" << std::endl;
     }
+
+
+    try {
+        player2->createPlayer("player2.wav");
+        rec2->createRecorder("recorder2.wav");
+    } catch ( pj::Error ex )
+    {
+        std::cout << "Failed creting plyaers" << std::endl;
+    }
+
+    try {
+        exManager.getDefaultAudioManager().setPlaybackDev(0);
+    } catch ( pj::Error err ) { }
+
+    try {
+        exManager.setPlaybackDevEx(0);
+    } catch ( pj::Error err ){ }
+
+
+    pj::AudioMedia& media1 = exManager.getDefaultAudioManager().getPlaybackDevMedia();
+    pj::AudioMedia& media2 = exManager.getPlaybackDevMediaEx();
+
+    player1->startTransmit(exManager.getDefaultAudioManager().getPlaybackDevMedia());
+  //  player2->startTransmit(exManager.getPlaybackDevMediaEx());
+    ret = PJ_SUCCESS;
 
     try {
         ep.libDestroy();

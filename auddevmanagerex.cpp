@@ -82,7 +82,6 @@ throw (pj::Error)
 }
 
 
-
 void
 AudDevManagerEx::connectToDevice1(void)
 {
@@ -109,7 +108,7 @@ AudDevManagerEx::connectToDevice2(void)
 }
 
 
-//private
+//private:
 int
 AudDevManagerEx::getActiveDevEx(bool is_capture) const
 throw (pj::Error)
