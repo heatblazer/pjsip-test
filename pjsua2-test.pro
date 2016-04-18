@@ -14,13 +14,13 @@ unix:{
     message("WARN!!! PJSIP must be linked to pthread and uuid!<-lpthread -luuid">)
     message("WARN!!! Order of static linking must be kept!")
 
-    INCLUDEPATH += -I/home/ilian/usr/bin/pjsua/include/
+
     LIBS += -lpthread
     LIBS += -lasound
     LIBS += -luuid
     LIBS += -lcrypto
     LIBS += -lssl
-    LIBS += -L/home/ilian/usr/bin/pjsua/lib64/          -lpjsua2-x86_64-unknown-linux-gnu           \
+    LIBS +=                                             -lpjsua2-x86_64-unknown-linux-gnu           \
                                                         -lpjsua-x86_64-unknown-linux-gnu            \
                                                         -lpjsip-ua-x86_64-unknown-linux-gnu         \
                                                         -lpjsip-simple-x86_64-unknown-linux-gnu     \
